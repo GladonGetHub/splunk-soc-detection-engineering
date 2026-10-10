@@ -1,0 +1,8 @@
+```Query 1: Detect Brute Force Login
+EventCode 4625 records each failed login. 5 or more failures from the same IP within a brief period suggests a brute force attack.```
+index=security EventCode=4625
+| bin _time span=5m
+| stats count AS failed_logins BY _time src_ip user
+| where failed_logins >= 5
+| sort - failed_logins
+| table _time src_ip user failed_logins

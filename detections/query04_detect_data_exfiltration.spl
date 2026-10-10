@@ -1,0 +1,9 @@
+```Query 4: Detect Data Exfiltration
+Alerts on any internal host that transmits more than 50 MB to a single external destination within 10 minutes.```
+index=network direction=outbound action=allow
+| bin _time span=10m
+| stats sum(bytes_out) AS total_bytes BY _time src_ip dest_ip dest_port
+| where total_bytes > 50*1024*1024
+| eval total_mb=round(total_bytes/1024/1024, 0)
+| sort - total_mb
+| table _time src_ip dest_ip dest_port total_mb

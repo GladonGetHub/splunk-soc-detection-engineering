@@ -1,0 +1,5 @@
+```Query 5: Detect New User Account Created
+Attackers create new accounts (EventCode 4720) as a backdoor to keep access.```
+index=security EventCode=4720
+| table _time Account_Name user src_ip host
+| sort - _time

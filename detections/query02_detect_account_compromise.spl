@@ -1,0 +1,11 @@
+```Query 2: Detect Account Compromise
+The same source IP and user showing failures followed by a success indicates a genuine breach.```
+index=security (EventCode=4625 OR EventCode=4624)
+| bin _time span=10m
+| stats count(eval(EventCode="4625")) AS failures,
+        count(eval(EventCode="4624")) AS successes
+        BY _time, user, src_ip
+| where failures >= 3 AND successes >= 1
+| eval risk_score = failures * 10
+| sort -risk_score
+| table _time, src_ip, user, failures, successes, risk_score

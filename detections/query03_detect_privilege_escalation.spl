@@ -1,0 +1,11 @@
+```Query 3: Detect Privilege Escalation
+Accounts added to powerful security groups: 4728 (Global), 4732 (Local), 4756 (Universal).```
+index=security (EventCode=4728 OR EventCode=4732 OR EventCode=4756)
+| eval group_type=case(
+    EventCode=4728, "Global Security Group",
+    EventCode=4732, "Local Security Group",
+    EventCode=4756, "Universal Security Group"
+)
+| search Group_Name IN ("Domain Admins","Enterprise Admins","Administrators","Schema Admins")
+| table _time user Account_Name Group_Name group_type host
+| sort - _time

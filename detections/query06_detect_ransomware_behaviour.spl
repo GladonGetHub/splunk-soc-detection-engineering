@@ -1,0 +1,8 @@
+```Query 6: Detect Ransomware Behaviour
+EventCode 4663 records file access. One user changing 200+ files in one minute is malware, not a human.```
+index=security EventCode=4663 Object_Type=File
+| bin _time span=1m
+| stats count AS file_ops BY _time, user, host
+| where file_ops > 200
+| sort -file_ops
+| table _time, host, user, file_ops

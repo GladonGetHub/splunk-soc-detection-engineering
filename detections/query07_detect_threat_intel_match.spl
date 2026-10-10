@@ -1,0 +1,9 @@
+```Query 7: Detect Threat Intelligence Match
+Compares TWP network traffic with the threat_intel_ips list (TOR exit nodes, APT C2 servers, banking trojan infrastructure).```
+| inputlookup threat_intel_ips.csv
+| rename ip AS dest_ip
+| join type=inner dest_ip
+    [search index=network
+     | stats count, values(src_ip) AS internal_src BY dest_ip]
+| table dest_ip, threat_type, severity, source, internal_src, count
+| sort -count
